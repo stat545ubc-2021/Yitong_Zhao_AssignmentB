@@ -1,0 +1,23 @@
+---
+title: "STAT 545B Assignment B1"
+author: "Yitong Zhao"
+output: github_document
+---
+
+# Setup
+
+Begin by loading test data and the required packages below: 
+
+```{r message=FALSE}
+suppressPackageStartupMessages(library(datateachr))
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(testthat))
+```
+
+# Exercise 1 & 2: Make and Document a Function
+
+In the data analysis of STAT 545A, I repeated the code to calculate the summary statistics and create boxplot across different groups for comparison. Therefore, I would like to make a function called `summary_and_boxplot_by_group()` to do the job for me.
+
+# Exercise 3: Examples
+
+# Exercise 4: Test the Function
