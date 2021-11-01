@@ -1,14 +1,12 @@
----
-title: "STAT 545B Assignment B1"
-author: "Yitong Zhao"
-output: github_document
----
+STAT 545B Assignment B1
+================
+Yitong Zhao
 
 # Setup
 
-Begin by loading the data and the required packages below: 
+Begin by loading the data and the required packages below:
 
-```{r message=FALSE}
+``` r
 suppressPackageStartupMessages(library(datateachr))
 suppressPackageStartupMessages(library(tidyverse))
 suppressPackageStartupMessages(library(testthat))
@@ -16,11 +14,14 @@ suppressPackageStartupMessages(library(testthat))
 
 # Exercise 1 & 2: Make and Document a Function
 
-In the data analysis of STAT 545A, I repeated the code to calculate the summary statistics and create boxplot across different groups for comparison. Therefore, I would like to make a function called `summary_and_boxplot_by_group()` to do the job for me.
+In the data analysis of STAT 545A, I repeated the code to calculate the
+summary statistics and create boxplot across different groups for
+comparison. Therefore, I would like to make a function called
+`summary_and_boxplot_by_group()` to do the job for me.
 
 Below is the implementation of the function.
 
-```{r}
+``` r
 #' @title Create summary statistics and boxplot across groups
 #' 
 #' @description This function calculates the summary statistics (min, max, mean, median) of a variable in a data frame
@@ -83,38 +84,89 @@ summary_and_boxplot_by_group <- function(data, group, var, drop_na = TRUE, alpha
 
 # Exercise 3: Examples
 
-The `apt_buildings` dataset is used in the examples. With the function `summary_and_boxplot_by_group()`, we can get the summary statistics and boxplot of `no_of_units` grouped by `property_type` with only one line of code.
+The `apt_buildings` dataset is used in the examples. With the function
+`summary_and_boxplot_by_group()`, we can get the summary statistics and
+boxplot of `no_of_units` grouped by `property_type` with only one line
+of code.
 
-```{r}
+``` r
 summary_and_boxplot_by_group(apt_buildings, "property_type", "no_of_units")
 ```
 
-The above boxplot is hard to read because of some outliers. We can set the parameter `scale_y` to `TRUE` to make the plot look better.
+    ## [[1]]
+    ## # A tibble: 3 x 6
+    ##   property_type    min   max  mean median     n
+    ##   <chr>          <dbl> <dbl> <dbl>  <dbl> <int>
+    ## 1 PRIVATE            0  4111  85.5     47  2888
+    ## 2 SOCIAL HOUSING    10   297  82.9     68   240
+    ## 3 TCHC              11   719 146.     128   327
+    ## 
+    ## [[2]]
 
-```{r}
+![](assignment-b1_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+
+The above boxplot is hard to read because of some outliers. We can set
+the parameter `scale_y` to `TRUE` to make the plot look better.
+
+``` r
 summary_and_boxplot_by_group(apt_buildings, "property_type", "no_of_units", scale_y = TRUE)
 ```
 
-The function can only calculate the summary statistics of numeric variables. If non-numeric column is passed to the third argument `var`, an error will occur.
+    ## [[1]]
+    ## # A tibble: 3 x 6
+    ##   property_type    min   max  mean median     n
+    ##   <chr>          <dbl> <dbl> <dbl>  <dbl> <int>
+    ## 1 PRIVATE            0  4111  85.5     47  2888
+    ## 2 SOCIAL HOUSING    10   297  82.9     68   240
+    ## 3 TCHC              11   719 146.     128   327
+    ## 
+    ## [[2]]
 
-```{r error=TRUE}
+    ## Warning: Transformation introduced infinite values in continuous y-axis
+
+    ## Warning: Removed 2 rows containing non-finite values (stat_boxplot).
+
+![](assignment-b1_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
+The function can only calculate the summary statistics of numeric
+variables. If non-numeric column is passed to the third argument `var`,
+an error will occur.
+
+``` r
 summary_and_boxplot_by_group(apt_buildings, "property_type", "air_conditioning")
 ```
 
+    ## Error in summary_and_boxplot_by_group(apt_buildings, "property_type", : Sorry, this function only works for numeric column!
+    ## You have provided an object of class: character
+
 # Exercise 4: Test the Function
 
-The function needs to be tested in two aspects. Firstly, it should calculate the summary statistics correctly. Secondly, a boxplot should be created.
+The function needs to be tested in two aspects. Firstly, it should
+calculate the summary statistics correctly. Secondly, a boxplot should
+be created.
 
 The dataset I used for testing is quite simple.
 
-```{r}
+``` r
 (test_data <- tibble(group = c("A", "B", "C", "A", "C", "A", "B"), 
                     value = c(1, 2, 3, 4, 5, NA, 6),
                     id = c("1", "2", "3", "4", "5", "6", "7")))
 ```
 
-1. Test if summary statistics are correct when removing NA values
-```{r}
+    ## # A tibble: 7 x 3
+    ##   group value id   
+    ##   <chr> <dbl> <chr>
+    ## 1 A         1 1    
+    ## 2 B         2 2    
+    ## 3 C         3 3    
+    ## 4 A         4 4    
+    ## 5 C         5 5    
+    ## 6 A        NA 6    
+    ## 7 B         6 7
+
+1.  Test if summary statistics are correct when removing NA values
+
+``` r
 expected_1 <- tibble(group = c("A", "B", "C"),
                      min = c(1, 2, 3),
                      max = c(4, 6, 5),
@@ -124,8 +176,12 @@ expected_1 <- tibble(group = c("A", "B", "C"),
 test_that("Test if summary statistics are correct when removing NA values", 
           expect_equal(summary_and_boxplot_by_group(test_data, "group", "value")[[1]], expected_1))
 ```
-2. Test if summary statistics are correct when keeping NA values
-```{r}
+
+    ## Test passed
+
+2.  Test if summary statistics are correct when keeping NA values
+
+``` r
 expected_2 <- tibble(group = c("A", "B", "C"),
                      min = c(NA, 2, 3),
                      max = c(NA, 6, 5),
@@ -136,8 +192,11 @@ test_that("Test if summary statistics are correct when keeping NA values",
           expect_equal(summary_and_boxplot_by_group(test_data, "group", "value", drop_na = FALSE)[[1]], expected_2))
 ```
 
-3. Test if there is an error when the type of argument is wrong
-```{r}
+    ## Test passed
+
+3.  Test if there is an error when the type of argument is wrong
+
+``` r
 test_that("Test if there is an error when the type of argument is wrong", {
           # `var` is not numeric
           expect_error(summary_and_boxplot_by_group(test_data, "group", "id"))
@@ -150,8 +209,11 @@ test_that("Test if there is an error when the type of argument is wrong", {
 })
 ```
 
-4. Test if the boxplot is correct
-```{r}
+    ## Test passed
+
+4.  Test if the boxplot is correct
+
+``` r
 plot <- summary_and_boxplot_by_group(test_data, "group", "value", alpha = 0.6)[[2]]
 
 test_that("Test if boxplot is correct", {
@@ -167,3 +229,5 @@ test_that("Test if boxplot is correct", {
           expect_equal(plot$layers[[1]]$aes_params$alpha, 0.6)
 })
 ```
+
+    ## Test passed
