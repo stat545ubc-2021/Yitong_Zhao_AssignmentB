@@ -6,7 +6,7 @@ output: github_document
 
 # Setup
 
-Begin by loading test data and the required packages below: 
+Begin by loading the data and the required packages below: 
 
 ```{r message=FALSE}
 suppressPackageStartupMessages(library(datateachr))
@@ -101,7 +101,61 @@ The function can only calculate the summary statistics of numeric variables. If 
 summary_and_boxplot_by_group(apt_buildings, "property_type", "air_conditioning")
 ```
 
-
 # Exercise 4: Test the Function
 
+The function needs to be tested in two aspects. Firstly, it should calculate the summary statistics correctly. Secondly, a boxplot should be created.
 
+The dataset I used for testing is quite simple.
+
+```{r}
+test_data <- tibble(group = c("A", "B", "C", "A", "C", "A", "B"), 
+                    value = c(1, 2, 3, 4, 5, NA, 6),
+                    id = c("1", "2", "3", "4", "5", "6", "7"))
+```
+
+1. Test if summary statistics are correct when removing NA values
+```{r}
+expected_1 <- tibble(group = c("A", "B", "C"),
+                     min = c(1, 2, 3),
+                     max = c(4, 6, 5),
+                     mean = c(2.5, 4.0, 4.0),
+                     median = c(2.5, 4.0, 4.0),
+                     n = c(3, 2, 2))
+test_that("Test if summary statistics are correct when removing NA values", 
+          expect_equal(summary_and_boxplot_by_group(test_data, "group", "value")[[1]], expected_1))
+```
+2. Test if summary statistics are correct when keeping NA values
+```{r}
+expected_2 <- tibble(group = c("A", "B", "C"),
+                     min = c(NA, 2, 3),
+                     max = c(NA, 6, 5),
+                     mean = c(NA, 4.0, 4.0),
+                     median = c(NA, 4.0, 4.0),
+                     n = c(3, 2, 2))
+test_that("Test if summary statistics are correct when keeping NA values",
+          expect_equal(summary_and_boxplot_by_group(test_data, "group", "value", drop_na = FALSE)[[1]], expected_2))
+```
+
+3. Test if there is an error when passing non-numeric value to `var`
+```{r}
+test_that("Test if there is an error when passing non-numeric value to `var`",
+          expect_error(summary_and_boxplot_by_group(test_data, "group", "id")))
+```
+
+4. Test if the boxplot is correct
+```{r}
+plot <- summary_and_boxplot_by_group(test_data, "group", "value", alpha = 0.6)[[2]]
+
+test_that("Test if boxplot is correct", {
+          # test if x-axis is `group`
+          expect_true(as.character(rlang::get_expr(plot$mapping$x)) == "group" ||
+                      as.character(rlang::get_expr(plot$layers[[1]]$mapping$x)) == "group")
+          # test if y-axis is `value`
+          expect_true(as.character(rlang::get_expr(plot$mapping$y)) == "value" ||
+                      as.character(rlang::get_expr(plot$layers[[1]]$mapping$y)) == "value")
+          # test if it is boxplot
+          expect_true("GeomBoxplot" %in% class(plot$layers[[1]]$geom))
+          # test alpha
+          expect_equal(plot$layers[[1]]$aes_params$alpha, 0.6)
+          })
+```
