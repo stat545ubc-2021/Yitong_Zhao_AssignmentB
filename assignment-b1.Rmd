@@ -41,9 +41,12 @@ Below is the implementation of the function.
 
 
 summary_and_boxplot_by_group <- function(data, group, var, drop_na = TRUE, alpha = 0.5, scale_y = FALSE) {
-  if(!is.numeric(data[[var]])) {
+  calculations <- summarise(data, is_numeric = is.numeric({{ var }}),
+                                         class = class({{ var }}))
+  
+  if(!calculations$is_numeric) {
     stop('Sorry, this function only works for numeric column!\n',
-         'You have provided an object of class: ', class(data[[var]])[1])
+         'You have provided an object of class: ', calculations$class)
   }
   if (!is.numeric(alpha)) {
     stop('Sorry, `alpha` has to be numeric!\n',
@@ -54,8 +57,6 @@ summary_and_boxplot_by_group <- function(data, group, var, drop_na = TRUE, alpha
          'You have provided `drop_na` of class: ', class(drop_na)[1], '\n',
          'You have provided `scale_y` of class: ', class(scale_y)[1])
   }
-  var = sym(var)
-  group = sym(group)
   
   # compute min, max, mean and median of variable `var` grouped by `group`
   summary <- data %>%
@@ -86,19 +87,19 @@ summary_and_boxplot_by_group <- function(data, group, var, drop_na = TRUE, alpha
 The `apt_buildings` dataset is used in the examples. With the function `summary_and_boxplot_by_group()`, we can get the summary statistics and boxplot of `no_of_units` grouped by `property_type` with only one line of code.
 
 ```{r}
-summary_and_boxplot_by_group(apt_buildings, "property_type", "no_of_units")
+summary_and_boxplot_by_group(apt_buildings, property_type, no_of_units)
 ```
 
 The above boxplot is hard to read because of some outliers. We can set the parameter `scale_y` to `TRUE` to make the plot look better.
 
 ```{r}
-summary_and_boxplot_by_group(apt_buildings, "property_type", "no_of_units", scale_y = TRUE)
+summary_and_boxplot_by_group(apt_buildings, property_type, no_of_units, scale_y = TRUE)
 ```
 
 The function can only calculate the summary statistics of numeric variables. If non-numeric column is passed to the third argument `var`, an error will occur.
 
 ```{r error=TRUE}
-summary_and_boxplot_by_group(apt_buildings, "property_type", "air_conditioning")
+summary_and_boxplot_by_group(apt_buildings, property_type, air_conditioning)
 ```
 
 # Exercise 4: Test the Function
@@ -122,7 +123,7 @@ expected_1 <- tibble(group = c("A", "B", "C"),
                      median = c(2.5, 4.0, 4.0),
                      n = c(3, 2, 2))
 test_that("Test if summary statistics are correct when removing NA values", 
-          expect_equal(summary_and_boxplot_by_group(test_data, "group", "value")[[1]], expected_1))
+          expect_equal(summary_and_boxplot_by_group(test_data, group, value)[[1]], expected_1))
 ```
 2. Test if summary statistics are correct when keeping NA values
 ```{r}
@@ -133,26 +134,26 @@ expected_2 <- tibble(group = c("A", "B", "C"),
                      median = c(NA, 4.0, 4.0),
                      n = c(3, 2, 2))
 test_that("Test if summary statistics are correct when keeping NA values",
-          expect_equal(summary_and_boxplot_by_group(test_data, "group", "value", drop_na = FALSE)[[1]], expected_2))
+          expect_equal(summary_and_boxplot_by_group(test_data, group, value, drop_na = FALSE)[[1]], expected_2))
 ```
 
 3. Test if there is an error when the type of argument is wrong
 ```{r}
 test_that("Test if there is an error when the type of argument is wrong", {
           # `var` is not numeric
-          expect_error(summary_and_boxplot_by_group(test_data, "group", "id"))
+          expect_error(summary_and_boxplot_by_group(test_data, group, id))
           # `drop_na` is not logical
-          expect_error(summary_and_boxplot_by_group(test_data, "group", "value", drop_na = 0))
+          expect_error(summary_and_boxplot_by_group(test_data, group, value, drop_na = 0))
           # `alpha` is not numeric
-          expect_error(summary_and_boxplot_by_group(test_data, "group", "value", alpha = "0.5"))
+          expect_error(summary_and_boxplot_by_group(test_data, group, value, alpha = "0.5"))
           # `scale_y` is not logical
-          expect_error(summary_and_boxplot_by_group(test_data, "group", "value", scale_y = 1))
+          expect_error(summary_and_boxplot_by_group(test_data, group, value, scale_y = 1))
 })
 ```
 
 4. Test if the boxplot is correct
 ```{r}
-plot <- summary_and_boxplot_by_group(test_data, "group", "value", alpha = 0.6)[[2]]
+plot <- summary_and_boxplot_by_group(test_data, group, value, alpha = 0.6)[[2]]
 
 test_that("Test if boxplot is correct", {
           # test if x-axis is `group`
