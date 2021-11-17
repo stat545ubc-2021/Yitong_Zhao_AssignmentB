@@ -45,17 +45,17 @@ summary_and_boxplot_by_group <- function(data, group, var, drop_na = TRUE, alpha
     dplyr::summarise(min = min({{var}}, na.rm = drop_na),
               max = max({{var}}, na.rm = drop_na),
               mean = mean({{var}}, na.rm = drop_na),
-              median = median({{var}}, na.rm = drop_na),
+              median = stats::median({{var}}, na.rm = drop_na),
               n = dplyr::n()
     )
 
   # create boxplot
   plot <- data %>%
-    ggplot2::ggplot(aes({{group}}, {{var}})) +
+    ggplot2::ggplot(ggplot2::aes({{group}}, {{var}})) +
     ggplot2::geom_boxplot(alpha = alpha)
 
   if (scale_y) {
-    plot <- plot + scale_y_log10()
+    plot <- plot + ggplot2::scale_y_log10()
   }
 
   result <- list(summary, plot)
