@@ -16,8 +16,9 @@
 #' @return A list containing (1) a tibble of summary statistics and, (2) the boxplot.
 #'
 #' @examples
-#' summary_and_boxplot_by_group(apt_buildings, property_type, no_of_units)
-#' summary_and_boxplot_by_group(apt_buildings, ward, no_of_storeys, alpha = 0.3, scale_y = TRUE)
+#' summary_and_boxplot_by_group(datateachr::apt_buildings, property_type, no_of_units)
+#' summary_and_boxplot_by_group(datateachr::apt_buildings, ward, no_of_storeys,
+#'                              alpha = 0.3, scale_y = TRUE)
 #'
 #' @export
 #'

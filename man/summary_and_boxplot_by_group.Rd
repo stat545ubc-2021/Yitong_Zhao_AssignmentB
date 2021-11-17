@@ -38,7 +38,8 @@ This function calculates the summary statistics (min, max, mean, median) of a va
 across different groups. It also creates a boxplot where x-axis represents groups and y-axis represents the variable.
 }
 \examples{
-summary_and_boxplot_by_group(apt_buildings, property_type, no_of_units)
-summary_and_boxplot_by_group(apt_buildings, ward, no_of_storeys, alpha = 0.3, scale_y = TRUE)
+summary_and_boxplot_by_group(datateachr::apt_buildings, property_type, no_of_units)
+summary_and_boxplot_by_group(datateachr::apt_buildings, ward, no_of_storeys,
+                             alpha = 0.3, scale_y = TRUE)
 
 }
