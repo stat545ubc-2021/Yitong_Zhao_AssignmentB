@@ -1,4 +1,3 @@
-Yitong Zhao
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
@@ -18,7 +17,7 @@ can download it from this repository using the following
 [R](https://www.r-project.org/) command.
 
 ``` r
-devtools::install_github("stat545ubc-2021/Yitong_Zhao_AssignmentB")
+devtools::install_github("stat545ubc-2021/Yitong_Zhao_AssignmentB", ref = "0.1.0")
 ```
 
 ## Example
