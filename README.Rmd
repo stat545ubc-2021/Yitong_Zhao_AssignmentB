@@ -1,0 +1,52 @@
+---
+output: github_document
+author: "Yitong Zhao"
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# assignmentB2
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+The goal of the package `assignmentB2` is to calculate the summary statistics (min, max, mean, median) and create a boxplot of a variable in a data frame across different groups more conveniently.
+
+## Installation
+
+This package is not yet on [CRAN](https://CRAN.R-project.org). But you can download it from this repository using the following [R](https://www.r-project.org/) command.
+
+``` r
+devtools::install_github("stat545ubc-2021/Yitong_Zhao_AssignmentB")
+```
+
+## Example
+
+This is a basic example which shows you how to use the function `summary_and_boxplot_by_group()` in this package:
+
+```{r}
+suppressPackageStartupMessages(library(assignmentB2))
+summary_and_boxplot_by_group(datateachr::apt_buildings, property_type, no_of_storeys)
+```
+
+You can also specify the argument `alpha` and `scale_y` change the default transparency and scale the y-axis of the boxplot to make it look better.
+
+```{r}
+summary_and_boxplot_by_group(datateachr::apt_buildings, property_type, no_of_units,
+                             alpha = 0.4, scale_y = TRUE)
+```
+
+More instructions about how to use the function `summary_and_boxplot_by_group()` can be found using the following command:
+
+```r
+?summary_and_boxplot_by_group
+```
