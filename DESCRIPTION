@@ -1,6 +1,6 @@
 Package: assignmentB2
 Title: Create summary statistics and boxplot across groups
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: 
     person(given = "Yitong",
            family = "Zhao",
