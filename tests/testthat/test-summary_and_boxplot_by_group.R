@@ -23,6 +23,8 @@ test_that("Test if summary statistics are correct when keeping NA values", {
 
 # test 3
 test_that("Test if there is an error when the type of argument is wrong", {
+  # `data` is not a data frame
+  expect_error(summary_and_boxplot_by_group("test_data", group, value))
   # `var` is not numeric
   expect_error(summary_and_boxplot_by_group(test_data, group, id))
   # `drop_na` is not logical

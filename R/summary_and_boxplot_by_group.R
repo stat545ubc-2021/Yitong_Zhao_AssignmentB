@@ -1,4 +1,4 @@
-#' @title Create summary statistics and boxplot across groups
+#' Create summary statistics and boxplot across groups
 #'
 #' @description This function calculates the summary statistics (min, max, mean, median) of a variable in a data frame
 #' across different groups. It also creates a boxplot where x-axis represents groups and y-axis represents the variable.
@@ -23,12 +23,25 @@
 #' @export
 #'
 summary_and_boxplot_by_group <- function(data, group, var, drop_na = TRUE, alpha = 0.5, scale_y = FALSE) {
-  calculations <- dplyr::summarise(data, is_numeric = is.numeric({{ var }}),
-                            class = class({{ var }}))
 
+  calculations <- dplyr::summarise(data,
+                                   is_numeric = is.numeric({{ var }}),
+                                   class_var = class({{ var }}),
+                                   is_factor_or_chr = is.factor({{ group }}) | is.character({{ group }}),
+                                   class_group = class({{ group }})
+  )
+
+  if (!is.data.frame(data)) {
+    stop('Sorry, `data` has to be a dataframe!\n',
+         'You have provided an object of class: ', class(data)[1])
+  }
+  if (!calculations$is_factor_or_chr) {
+    stop('Sorry, the type of `group` has to be factor or character!\n',
+         'You have provided an object of class: ', calculations$class_group)
+  }
   if(!calculations$is_numeric) {
     stop('Sorry, this function only works for numeric column!\n',
-         'You have provided an object of class: ', calculations$class)
+         'You have provided an object of class: ', calculations$class_var)
   }
   if (!is.numeric(alpha)) {
     stop('Sorry, `alpha` has to be numeric!\n',
@@ -48,12 +61,14 @@ summary_and_boxplot_by_group <- function(data, group, var, drop_na = TRUE, alpha
               mean = mean({{var}}, na.rm = drop_na),
               median = stats::median({{var}}, na.rm = drop_na),
               n = dplyr::n()
-    )
+  )
 
   # create boxplot
   plot <- data %>%
-    ggplot2::ggplot(ggplot2::aes({{group}}, {{var}})) +
-    ggplot2::geom_boxplot(alpha = alpha)
+    ggplot2::ggplot(ggplot2::aes({{group}}, {{var}}, fill={{group}})) +
+    ggplot2::geom_boxplot(alpha = alpha) +
+    ggplot2::scale_fill_brewer(palette="RdBu") +
+    ggplot2::theme_classic()
 
   if (scale_y) {
     plot <- plot + ggplot2::scale_y_log10()
